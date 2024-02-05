@@ -94,7 +94,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'bookmanagement',
-        'USER': 'priyanshijain',
+        'USER': 'postgres',
         'PASSWORD': 'priya1501@',
         'HOST': 'localhost',  # or the hostname where your MySQL server is running
         'PORT': '5432',      # or the port on which your MySQL server is listening

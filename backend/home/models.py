@@ -1,4 +1,8 @@
+from enum import unique
 from django.db import models
+from django.contrib.auth.hashers import make_password
+from django.core.validators import MinLengthValidator,MaxLengthValidator,RegexValidator,EmailValidator
+# Create your models here.from django.db import models
 from django.contrib.auth.hashers import make_password
 from django.core.validators import MinLengthValidator,MaxLengthValidator,RegexValidator,EmailValidator
 # Create your models here.
@@ -11,9 +15,20 @@ class User(models.Model):
     Email = models.EmailField(
         validators=[
             EmailValidator(message='Enter a valid email address.')
+        ],
+        unique=True
+    )
+    Password = models.CharField(
+        max_length=4096,
+        validators=[
+            RegexValidator(
+                regex=r'^(?=.*[a-z])(?=.*[A-Z]).{5,}$',
+                message='Password must contain at least one lowercase letter, one uppercase letter, and be at least 5 characters long.',
+                code='invalid_password_format'
+            ),
+            # Add more validators if needed
         ]
     )
-    Password=models.CharField(max_length=4096)
     PhoneNo = models.CharField(
         max_length=10,
         validators=[
@@ -24,7 +39,7 @@ class User(models.Model):
                 message='Phone number must be a 10-digit integer.',
                 code='invalid_phone_number'
             )
-    ])
+    ],unique=True)
     Address=models.CharField(max_length=100)
 
     ROLE_CHOICES = (
@@ -58,14 +73,14 @@ class Seller(models.Model):
 
 class Book(models.Model):
     BookId=models.AutoField(primary_key=True)
-    Seller=models.ForeignKey(Seller,on_delete=models.CASCADE)
-    Title=models.CharField(max_length=50)
+    SellerObj=models.ForeignKey(Seller,on_delete=models.CASCADE)
+    Title=models.CharField(max_length=200)
     Author=models.CharField(max_length=30)
     Genre=models.CharField(max_length=20)
     Price=models.FloatField()
     PublishYear=models.CharField(max_length=4)
     Image=models.URLField(max_length=128)
-    Description=models.TextField(max_length=200)
+    Description=models.TextField(max_length=700)
     AvailQuantity=models.IntegerField()
     SoldQuantity=models.IntegerField()
     Language=models.CharField(max_length=20)
@@ -74,16 +89,24 @@ class Book(models.Model):
 
     class Meta:
         db_table = 'book'
-        unique_together = (('Seller', 'Title'),)
-
+        unique_together = (('SellerObj', 'Title'),)
+        
 
 
 class Request(models.Model):
     RequestId=models.AutoField(primary_key=True)
     SellerObj=models.OneToOneField(Seller,on_delete=models.CASCADE)
+    STATUS_CHOICES = (
+    ("Pending", "Pending"),
+    ("Accepted", "Accepted"),
+    ("Declined", "Declined"),
+    )
+    Status=models.CharField(max_length=8,choices=STATUS_CHOICES,default="Pending")
+    
 
     class Meta:
         db_table = 'request'
+
 
 class WishList(models.Model):
     ListId=models.AutoField(primary_key=True)
@@ -148,4 +171,3 @@ class Reviews(models.Model):
 
     class Meta:
         db_table = 'reviews'
-
