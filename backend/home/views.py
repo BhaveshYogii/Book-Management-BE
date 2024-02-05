@@ -148,9 +148,14 @@ def getrequeststatus(request):
 @csrf_exempt
 @api_view(['POST'])
 def signin(request):
-    if 'Email' not in request.data:
+    response={}
+    if request.data['Email']=='':
         response['success']=False
-        response['message']='email id required'
+        response['message']='Email Id required'
+        return Response(response,status.HTTP_400_BAD_REQUEST)
+    if request.data['Password']=='':
+        response['success']=False
+        response['message']='Password required'
         return Response(response,status.HTTP_400_BAD_REQUEST)
     
     Email=request.data['Email']
