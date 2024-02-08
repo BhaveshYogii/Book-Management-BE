@@ -20,10 +20,9 @@ urlpatterns = [
     path("getwishlistelements/",views.getwishlistelements),
     path("getorderelements/",views.getorderelements),
     path("placeorder/",views.placeorder),
-    
-    
-
-
+    path("searchbook/",views.searchbook),
+    path("logout/",views.logout),
+    path("updatecart/",views.updatecart),
 
 
     
