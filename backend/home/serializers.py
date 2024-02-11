@@ -23,7 +23,7 @@ class CartSerializer(ModelSerializer):
 
 class wishListSerializer(ModelSerializer):
     class Meta:
-        model = Cart
+        model = WishList
         fields = '__all__'
 
 class CartElementSerializer(ModelSerializer):
@@ -41,3 +41,12 @@ class OrderElementSerializer(ModelSerializer):
         model = OrderElement
         fields = '__all__'                 
                           
+class OrderSerializer(ModelSerializer):
+    class Meta:
+        model = Order
+        fields = '__all__'                              
+
+class RequestSerializer(ModelSerializer):
+    class Meta:
+        model = Request
+        fields = '__all__'          
