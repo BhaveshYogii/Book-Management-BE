@@ -1,8 +1,4 @@
-from enum import unique
 from django.db import models
-from django.contrib.auth.hashers import make_password
-from django.core.validators import MinLengthValidator,MaxLengthValidator,RegexValidator,EmailValidator
-# Create your models here.from django.db import models
 from django.contrib.auth.hashers import make_password
 from django.core.validators import MinLengthValidator,MaxLengthValidator,RegexValidator,EmailValidator
 # Create your models here.
@@ -22,11 +18,10 @@ class User(models.Model):
         max_length=4096,
         validators=[
             RegexValidator(
-                regex=r'^(?=.*[a-z])(?=.*[A-Z]).{5,}$',
-                message='Password must contain at least one lowercase letter, one uppercase letter, and be at least 5 characters long.',
+                regex=r'^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).{5,}$',
+                message='Password must contain atleast 1 uppercase letter, 1 special character, and 1 number and be atleast 5 characters long.',
                 code='invalid_password_format'
             ),
-            # Add more validators if needed
         ]
     )
     PhoneNo = models.CharField(
@@ -80,12 +75,12 @@ class Book(models.Model):
     Price=models.FloatField()
     PublishYear=models.CharField(max_length=4)
     Image=models.URLField(max_length=128)
-    Description=models.TextField(max_length=700)
+    Description=models.TextField(max_length=1200)
     AvailQuantity=models.IntegerField()
-    SoldQuantity=models.IntegerField()
+    SoldQuantity=models.IntegerField(null=True,default=0)
     Language=models.CharField(max_length=20)
-    OverallRating=models.FloatField(max_length=100)
-    TotalReviews=models.IntegerField()
+    OverallRating=models.FloatField(max_length=100,null=True,default=0)
+    TotalReviews=models.IntegerField(null=True,default=0)
 
     class Meta:
         db_table = 'book'
@@ -96,13 +91,13 @@ class Book(models.Model):
 class Request(models.Model):
     RequestId=models.AutoField(primary_key=True)
     SellerObj=models.OneToOneField(Seller,on_delete=models.CASCADE)
+
     STATUS_CHOICES = (
     ("Pending", "Pending"),
     ("Accepted", "Accepted"),
     ("Declined", "Declined"),
     )
     Status=models.CharField(max_length=8,choices=STATUS_CHOICES,default="Pending")
-    
 
     class Meta:
         db_table = 'request'
@@ -171,3 +166,5 @@ class Reviews(models.Model):
 
     class Meta:
         db_table = 'reviews'
+
+

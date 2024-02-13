@@ -9,8 +9,12 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import environ
 from pathlib import Path
+
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -93,11 +97,11 @@ DATABASES = {
 
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bookmanagement',
-        'USER': 'postgres',
-        'PASSWORD': 'priya1501@',
-        'HOST': 'localhost',  # or the hostname where your MySQL server is running
-        'PORT': '5432',      # or the port on which your MySQL server is listening
+        'NAME': 'book_management',
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASS'),
+        'HOST': 'database-2.clsgkqi8i3ue.ap-south-1.rds.amazonaws.com',  
+        'PORT': '5432',     
     }
 }
 
