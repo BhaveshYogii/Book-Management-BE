@@ -873,4 +873,39 @@ def sellerupdatebook(request):
         return Response({"success": True, "message": "Book updated successfully"}, status=200)
     else:
         return Response(serializer.errors, status=400)
+    
+@api_view(['DELETE'])
+def sellerdeletebook(request):
+    session_key = request.data.get("session_key")
+    bookid = request.data.get("bookId")
+
+    if not validation(session_key):
+        response = {
+            "success": False,
+            "message": "Please login"
+        }
+        return Response(response, status=401)
+
+    
+    if(not Book.objects.get(BookId=bookid)):
+        return Response({"error":"Book Does Not Exist"},status=400)    
+    book = Book.objects.get(BookId=bookid)
+
+
+    session = Session.objects.get(session_key=session_key)
+    session_data = session.get_decoded()
+    email = session_data['Email']
+    userObj = User.objects.get(Email=email)
+
+    if(not Seller.objects.filter(UserObj=userObj)):
+       return Response({"error":"You are not a seller"},status=400)
+    
+    seller=Seller.objects.filter(UserObj=userObj)[0]
+
+    if book.SellerObj != seller:
+        return Response({"error": "You are not authorized to delete this book"}, status=403)
+
+    book.delete()
+
+    return Response({"message": "Book deleted successfully"}, status=200)    
 

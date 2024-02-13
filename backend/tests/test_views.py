@@ -28,8 +28,8 @@ class SignupViewTest(TestCase):
         valid_user_data = {
             'FirstName': 'John',
             'LastName': 'Doe',
-            'Email': 'john.doe@example.com',
-            'Password': 'Test123',
+            'Email': 'johndoe@example.com',
+            'Password': 'Test@123',
             'PhoneNo': '1234567890',
             'Address': '123 Street, City',
             'Role': 'Buyer'
@@ -190,19 +190,29 @@ class SellerRegisterTest(APITestCase):
         self.user = User.objects.create(
             FirstName='John',
             LastName='Doe',
-            Email='john.doe@example.com',
+            Email='johndoe@example.com',
             Password='Test123',
             PhoneNo='1234567890',
             Address='123 Street, City',
             Role='Buyer'
         )
+
+        self.admin = User.objects.create(
+            FirstName='John',
+            LastName='Doe',
+            Email='admin@example.com',
+            Password='Test123',
+            PhoneNo='1234567891',
+            Address='123 Street, City',
+            Role='Admin'
+        )
         # Create a session for the user
         self.client = APIClient()
-        self.client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.admin)
         # Create a session and attach it to the request
         self.factory = RequestFactory()
         self.session = self.client.session
-        self.session['Email'] = self.user.Email
+        self.session['Email'] = self.admin.Email
         self.session.save()
 
         # Create a Seller and a Request for the user
@@ -218,7 +228,8 @@ class SellerRegisterTest(APITestCase):
 
     def test_seller_register_pending_request(self):
         url = reverse('sellerregister')
-        data = {'session_key': self.session.session_key}
+        data = {'session_key': self.session.session_key,
+                'sellerId' : self.seller.SellerId}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertIn('Request is in pending state', response.data.get('error', ''))       
@@ -228,7 +239,8 @@ class SellerRegisterTest(APITestCase):
         self.user.Role='Seller'
         self.request.save()
         url = reverse('sellerregister')
-        data = {'session_key': self.session.session_key}
+        data = {'session_key': self.session.session_key,
+                'sellerId' : self.seller.SellerId}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.user.Role, 'Seller')
@@ -238,7 +250,8 @@ class SellerRegisterTest(APITestCase):
         self.request.Status = 'Declined'
         self.request.save()
         url = reverse('sellerregister')
-        data = {'session_key': self.session.session_key}
+        data = {'session_key': self.session.session_key,
+                'sellerId' : self.seller.SellerId}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.user.Role, 'Buyer')
@@ -248,7 +261,8 @@ class SellerRegisterTest(APITestCase):
     def test_seller_register_not_seller(self):
         self.seller.delete()
         url = reverse('sellerregister')
-        data = {'session_key': self.session.session_key}
+        data = {'session_key': self.session.session_key,
+                'sellerId' : self.seller.SellerId}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertIn('Seller Does Not Exist', response.data.get('error', ''))
@@ -256,25 +270,26 @@ class SellerRegisterTest(APITestCase):
     def test_seller_register_no_request(self):
         self.request.delete()
         url = reverse('sellerregister')
-        data = {'session_key': self.session.session_key}
+        data = {'session_key': self.session.session_key,
+                'sellerId' : self.seller.SellerId}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertIn('Request Does Not Exist', response.data.get('error', ''))   
+ 
 
-class AddToListTest(APITestCase):
+class LogoutAPITestCase(TestCase):
     def setUp(self):
-        # Create a test user
+        # Create a user for the session
         self.user = User.objects.create(
             FirstName='John',
             LastName='Doe',
-            Email='john.doe@example.com',
+            Email='johndoe@example.com',
             Password='Test123',
             PhoneNo='1234567890',
             Address='123 Street, City',
-            Role='Seller'
+            Role='Buyer'
         )
 
-      # Create a session for the user
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
         # Create a session and attach it to the request
@@ -282,5 +297,91 @@ class AddToListTest(APITestCase):
         self.session = self.client.session
         self.session['Email'] = self.user.Email
         self.session.save()
-   
+
+
+    def test_logout(self):
+        url = reverse('logout')
+        data = {'session_key': self.session.session_key}
+        response = self.client.post(url, data)
+        self.session.delete()
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        self.assertFalse(Session.objects.filter(session_key=self.session.session_key).exists())
+
+
+class UploadBookTest(APITestCase):
+    def setUp(self):
+        # Create a user for the session
+        self.user = User.objects.create(
+            FirstName='John',
+            LastName='Doe',
+            Email='johndoe@example.com',
+            Password='Test123',
+            PhoneNo='1234567890',
+            Address='123 Street, City',
+            Role='Buyer'
+        )
+
+        self.admin = User.objects.create(
+            FirstName='John',
+            LastName='Doe',
+            Email='admin@example.com',
+            Password='Test123',
+            PhoneNo='1234567891',
+            Address='123 Street, City',
+            Role='Admin'
+        )
+        # Create a session for the user
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.admin)
+        # Create a session and attach it to the request
+        self.factory = RequestFactory()
+        self.session = self.client.session
+        self.session['Email'] = self.admin.Email
+        self.session.save()
+
+        # Create a Seller and a Request for the user
+        self.seller = Seller.objects.create(
+            UserObj=self.user,
+            Company='ABC Inc.',
+            CompanyLocation='City XYZ'
+        )
+        self.request = Request.objects.create(
+            SellerObj=self.seller,
+            Status='Pending'
+        )      
+    
+    def test_seller_register_accepted_request(self):
+        self.request.Status = 'Accepted'
+        self.user.Role='Seller'
+        self.request.save()
+        url = reverse('sellerregister')
+        data = {'session_key': self.session.session_key,
+                'sellerId' : self.seller.SellerId}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.user.Role, 'Seller')
+        self.assertEqual(Seller.objects.filter(UserObj=self.user).count(), 1)
+    
+    def test_upload_book_success(self):
+        url = reverse('uploadbook')  
+        # Assuming you have a URL name for the uploadbook endpoint
+        data = {
+            'session_key': self.session.session_key,
+            'Title': 'Test Book',
+            'Author': 'Test Author',
+            'Genre': 'Test Genre',
+            'Price': 10.99,
+            'PublishYear': '2022',
+            'Image': 'https://example.com/image.jpg',
+            'Description': 'This is a test book description.',
+            'AvailQuantity': 10,
+            'Language': 'English', 
+            'SellerObj' : self.seller.SellerId
+        }
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Book.objects.count(), 1)
+        self.assertEqual(Book.objects.get().Title, 'Test Book')
    

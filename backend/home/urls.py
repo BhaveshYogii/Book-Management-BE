@@ -11,7 +11,7 @@ urlpatterns = [
     path("sellerregister/",views.sellerregister , name='sellerregister'),
     path("signin/",views.signin ,name='signin'),
     path("getbooks/",views.getbooks, name='getbooks'),
-    path("uploadbook/",views.uploadbook),
+    path("uploadbook/",views.uploadbook , name='uploadbook'),
     path("addtolist/",views.addtolist , name='addtolist'),
     path("deletefromlist/",views.deletefromlist),
     path("addtocart/",views.addtocart),
@@ -19,9 +19,9 @@ urlpatterns = [
     path("getcartelements/",views.getcartelements),
     path("getwishlistelements/",views.getwishlistelements),
     path("getorderelements/",views.getorderelements),
-    path("placeorder/",views.placeorder),
+    path("placeorder/",views.placeorder , name='placeorder'),
     path("searchbook/",views.searchbook),
-    path("logout/",views.logout),
+    path("logout/",views.logout , name='logout'),
     path("updatecart/",views.updatecart),
     path("generate_pdf_invoice/",views.generate_pdf_invoice),
     path("getrole/",views.getrole),
@@ -31,7 +31,6 @@ urlpatterns = [
     path("adminupdaterequests/",views.adminupdaterequests),
     path("sellergetbooks/",views.sellergetbooks),
     path("sellerupdatebook/",views.sellerupdatebook),
-
-
+    path("sellerdeletebook/",views.sellerdeletebook),
     
 ]
