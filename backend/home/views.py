@@ -13,9 +13,11 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 
+@csrf_exempt
 def index(request):
     return Response({"message":"Home"},status=201)
 
+@csrf_exempt
 def validation(data):
     session_key=data
     if session_key=="":
@@ -453,7 +455,7 @@ def placeorder(request):
     return Response({"message":"Order Placed successfully"},status=201)
 
 
-
+@csrf_exempt
 @api_view(['POST'])
 def logout(request):
     
@@ -555,7 +557,7 @@ def updatecart(request):
     
     return Response({"message":"Quantity updated"},status=201)
 
-
+@csrf_exempt
 @api_view(['POST'])
 def getrole(request):
     session_key=request.data["session_key"]
@@ -873,7 +875,8 @@ def sellerupdatebook(request):
         return Response({"success": True, "message": "Book updated successfully"}, status=200)
     else:
         return Response(serializer.errors, status=400)
-    
+
+@csrf_exempt    
 @api_view(['DELETE'])
 def sellerdeletebook(request):
     session_key = request.data.get("session_key")
