@@ -1,16 +1,5 @@
 #!/usr/bin/env bash
 
-# clean codedeploy-agent files for a fresh install
-sudo rm -rf /home/ubuntu/install
-
-# install CodeDeploy agent
-sudo apt-get -y update
-sudo apt-get -y install ruby
-sudo apt-get -y install wget
-cd /home/ubuntu
-wget https://aws-codedeploy-ap-south-1.s3.ap-south-1.amazonaws.com/latest/install
-sudo chmod +x ./install
-sudo ./install auto
 
 # update os & install python3 and libpq-dev for postgresql
 sudo apt-get update
