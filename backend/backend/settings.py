@@ -29,7 +29,7 @@ SECRET_KEY = "django-insecure-+l#m&jm(11o1fqv%tasqzc8=7^l_h%!o-+b@!un!x%3dpyh@s^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -103,7 +103,7 @@ DATABASES = {
         'HOST': 'database-2.clsgkqi8i3ue.ap-south-1.rds.amazonaws.com',  
         'PORT': '5432',     
     }
-}
+}  
 
 
 # Password validation
