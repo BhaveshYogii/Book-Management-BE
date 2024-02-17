@@ -14,10 +14,10 @@ python3 -m venv venv
 source venv/bin/activate
 
 install requirements.txt
-pip install -r /home/ubuntu/Team3-Book-Management-BE/requirements.txt
+pip install -r requirements.txt
 
 # run server
-cd /home/ubuntu/Team3-Book-Management-BE/backend
+cd /backend
 python3 manage.py makemigrations 
 python3 manage.py migrate
 screen -d -m python3 manage.py runserver 0:8000
