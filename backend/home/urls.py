@@ -31,6 +31,7 @@ urlpatterns = [
     path("adminupdaterequests/",views.adminupdaterequests),
     path("sellergetbooks/",views.sellergetbooks),
     path("sellerupdatebook/",views.sellerupdatebook),
+    path("sellerdeletebook/",views.sellerdeletebook),
 
 
     
