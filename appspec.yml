@@ -1,0 +1,10 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/Team3-Book-Management-BE
+hooks:
+  BeforeInstall:
+      - location: /backend/scripts/before_install.sh
+  AfterInstall:
+      - location: /backend/scripts/after_install.sh
